@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Encryptor/Decryptor</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 600px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #1e3c72;
+            margin-bottom: 30px;
+        }
+
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #eee;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-size: 16px;
+            color: #666;
+            transition: all 0.3s ease;
+        }
+
+        .tab.active {
+            color: #1e3c72;
+            border-bottom: 2px solid #1e3c72;
+            margin-bottom: -2px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #444;
+            font-weight: 500;
+        }
+
+        input[type="file"],
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        input[type="text"] {
+            background: #f9f9f9;
+        }
+
+        .button {
+            background: #1e3c72;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 16px;
+            transition: background 0.3s ease;
+        }
+
+        .button:hover {
+            background: #2a5298;
+        }
+
+        #status {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 5px;
+            display: none;
+        }
+
+        #status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            display: block;
+        }
+
+        #status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            display: block;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Video Encryptor/Decryptor</h1>
+        
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('encrypt')">Encrypt</button>
+            <button class="tab" onclick="switchTab('decrypt')">Decrypt</button>
+        </div>
+
+        <div id="encrypt-content" class="tab-content active">
+            <form id="encrypt-form">
+                <div class="form-group">
+                    <label for="video-file">Select Video File</label>
+                    <input type="file" id="video-file" accept="video/*" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="encryption-key">Encryption Key</label>
+                    <input type="text" id="encryption-key" placeholder="Enter your encryption key" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="output-path">Output Path</label>
+                    <input type="text" id="output-path" placeholder="Enter output path (optional)">
+                </div>
+
+                <button type="submit" class="button">Encrypt Video</button>
+                <a id="download-link" style="display: none;" href="#" class="button" download>Download Processed File</a>
+            </form>
+        </div>
+
+        <div id="decrypt-content" class="tab-content">
+            <form id="decrypt-form">
+                <div class="form-group">
+                    <label for="encrypted-file">Select Encrypted File</label>
+                    <input type="file" id="encrypted-file" accept=".encrypted" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="decryption-key">Decryption Key</label>
+                    <input type="text" id="decryption-key" placeholder="Enter your decryption key" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="decrypt-output-path">Output Path</label>
+                    <input type="text" id="decrypt-output-path" placeholder="Enter output path (optional)">
+                </div>
+
+                <button type="submit" class="button">Decrypt Video</button>
+            </form>
+        </div>
+
+        <div id="status"></div>
+    </div>
+
+    <script>
+        function switchTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+            document.querySelector(`[onclick="switchTab('${tab}')"]`).classList.add('active');
+            document.getElementById(`${tab}-content`).classList.add('active');
+        }
+
+        function showStatus(message, type) {
+            const status = document.getElementById('status');
+            status.textContent = message;
+            status.className = type === 'success' ? 'success' : 'error';
+            status.style.display = 'block';
+            setTimeout(() => {
+                status.style.display = 'none';
+            }, 5000);
+        }
+
+        // Encrypt form handler
+        document.getElementById('encrypt-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const videoFile = document.getElementById('video-file').files[0];
+            const encryptionKey = document.getElementById('encryption-key').value;
+            const outputPath = document.getElementById('output-path').value;
+
+            const formData = new FormData();
+            formData.append('videoFile', videoFile);
+            formData.append('encryptionKey', encryptionKey);
+            formData.append('outputPath', outputPath);
+
+            try {
+                const response = await fetch('/encrypt', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+                showStatus(result.message, result.status);
+            } catch (error) {
+                showStatus('Encryption failed: ' + error.message, 'error');
+            }
+        });
+
+        // Decrypt form handler
+        document.getElementById('decrypt-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const encryptedFile = document.getElementById('encrypted-file').files[0];
+            const decryptionKey = document.getElementById('decryption-key').value;
+            const outputPath = document.getElementById('decrypt-output-path').value;
+
+            const formData = new FormData();
+            formData.append('encryptedFile', encryptedFile);
+            formData.append('decryptionKey', decryptionKey);
+            formData.append('outputPath', outputPath);
+
+            try {
+                const response = await fetch('/decrypt', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+                showStatus(result.message, result.status);
+            } catch (error) {
+                showStatus('Decryption failed: ' + error.message, 'error');
+            }
+        });
+    </script>
+</body>
+</html>
