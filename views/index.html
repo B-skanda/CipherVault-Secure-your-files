@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure File Vault</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Secure File Vault</h1>
+        <p>Protect your files with advanced encryption and secure decryption.</p>
+
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('encrypt')">Encrypt</div>
+            <div class="tab" onclick="switchTab('decrypt')">Decrypt</div>
+        </div>
+
+        <div id="encrypt-content" class="tab-content active">
+            <form id="encrypt-form">
+                <div class="form-group">
+                    <label for="file-input">Select File</label>
+                    <input type="file" id="file-input" accept="image/*,video/*,text/plain" required>
+                </div>
+                <div class="form-group">
+                    <label for="encryption-key">Encryption Key</label>
+                    <input type="password" id="encryption-key" placeholder="Enter Encryption Key" required>
+                </div>
+                <button type="submit" class="button">Encrypt File</button>
+            </form>
+        </div>
+
+        <div id="decrypt-content" class="tab-content">
+            <form id="decrypt-form">
+                <div class="form-group">
+                    <label for="encrypted-file">Select Encrypted File</label>
+                    <input type="file" id="encrypted-file" accept=".encrypted" required>
+                </div>
+                <div class="form-group">
+                    <label for="decryption-key">Decryption Key</label>
+                    <input type="password" id="decryption-key" placeholder="Enter Decryption Key" required>
+                </div>
+                <button type="submit" class="button">Decrypt File</button>
+            </form>
+        </div>
+
+        <!-- Logout Button -->
+        <button class="logout-button" onclick="logout()">Log Out</button>
+
+        <!-- Status Display -->
+        <div id="status" class="status-message"></div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
