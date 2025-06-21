@@ -42,6 +42,6 @@
 ### For Developers
 
 ```bash
-git clone https://github.com/B-skanda/cipher-vault.git
+https://github.com/B-skanda/CipherVault-Secure-your-files.git
 cd cipher-vault
 pip install npm  # or your build method
